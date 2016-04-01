@@ -51,7 +51,6 @@ NSString *const tnOverridePackageName = @"overridePackageName";
 }
 
 - (instancetype)initWithConfiguration:(NSDictionary *)configuration startImmediately:(BOOL)startImmediately {
-    NSAssert(configuration != nil, @"Required parameter. It cannot be nil.");
     self = [super init];
     if (!self) {
         return nil;
@@ -77,24 +76,19 @@ NSString *const tnOverridePackageName = @"overridePackageName";
     _started = YES;
 
     dispatch_async(dispatch_get_main_queue(), ^{
-        NSDictionary *userInfo = @{mParticleKitInstanceKey:[[self class] kitCode],
-                                   mParticleEmbeddedSDKInstanceKey:[[self class] kitCode]};
+        NSDictionary *userInfo = @{mParticleKitInstanceKey:[[self class] kitCode]};
 
         [[NSNotificationCenter defaultCenter] postNotificationName:mParticleKitDidBecomeActiveNotification
                                                             object:nil
                                                           userInfo:userInfo];
-
-        [[NSNotificationCenter defaultCenter] postNotificationName:mParticleEmbeddedSDKDidBecomeActiveNotification
-                                                            object:nil
-                                                          userInfo:userInfo];
     });
+
     return self;
 }
 
 static NSString* const USER_DEFAULT_KEY_PREFIX = @"_TUNE_";
 
-+ (id)userDefaultValueForKey:(NSString *)key
-{
++ (id)userDefaultValueForKey:(NSString *)key {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSString *newKey = [NSString stringWithFormat:@"%@%@", USER_DEFAULT_KEY_PREFIX, key];
 
@@ -105,8 +99,7 @@ static NSString* const USER_DEFAULT_KEY_PREFIX = @"_TUNE_";
     return [defaults valueForKey:key];
 }
 
-+ (void)setUserDefaultValue:(id)value forKey:(NSString* )key
-{
++ (void)setUserDefaultValue:(id)value forKey:(NSString* )key {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     key = [NSString stringWithFormat:@"%@%@", USER_DEFAULT_KEY_PREFIX, key];
     [defaults setValue:value forKey:key];
