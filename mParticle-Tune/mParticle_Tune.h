@@ -1,5 +1,5 @@
 //
-//  MPKitTune.h
+//  mParticle_Tune.h
 //
 //  Copyright 2016 mParticle, Inc.
 //
@@ -16,16 +16,14 @@
 //  limitations under the License.
 //
 
-#import <Foundation/Foundation.h>
-#if defined(__has_include) && __has_include(<mParticle_Apple_SDK/mParticle.h>)
-#import <mParticle_Apple_SDK/mParticle.h>
-#else
-#import "mParticle.h"
-#endif
+#import <UIKit/UIKit.h>
 
-@interface MPKitTune : NSObject <MPKitProtocol>
+//! Project version number for mParticle-Tune.
+FOUNDATION_EXPORT double mParticle_TuneVersionNumber;
 
-@property (nonatomic, strong, nonnull) NSDictionary *configuration;
-@property (nonatomic, unsafe_unretained, readonly) BOOL started;
+//! Project version string for mParticle-Tune.
+FOUNDATION_EXPORT const unsigned char mParticle_TuneVersionString[];
 
-@end
+// In this header, you should import all the public headers of your framework using statements like #import <mParticle_Tune/PublicHeader.h>
+
+#import <mParticle_Tune/MPKitTune.h>

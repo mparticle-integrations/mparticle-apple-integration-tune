@@ -17,10 +17,6 @@
 //
 
 #import "MPKitTune.h"
-#import "MPApplication.h"
-#import "MPDevice.h"
-#import "mParticle.h"
-#import "MPKitRegister.h"
 #import <UIKit/UIKit.h>
 
 NSString *const tnAdvertiserId = @"advertiserId";
@@ -50,6 +46,26 @@ NSString *const tnOverridePackageName = @"overridePackageName";
     [MParticle registerExtension:kitRegister];
 }
 
++ (NSString *)advertiserId {
+    NSString *advertiserId = nil;
+    Class MPIdentifierManager = NSClassFromString(@"ASIdentifierManager");
+    if (MPIdentifierManager) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+        SEL selector = NSSelectorFromString(@"sharedManager");
+        id<NSObject> adIdentityManager = [MPIdentifierManager performSelector:selector];
+        
+        selector = NSSelectorFromString(@"advertisingIdentifier");
+        advertiserId = [[adIdentityManager performSelector:selector] UUIDString];
+#pragma clang diagnostic pop
+#pragma clang diagnostic pop
+    }
+    
+    return advertiserId;
+}
+
 - (instancetype)initWithConfiguration:(NSDictionary *)configuration startImmediately:(BOOL)startImmediately {
     self = [super init];
     if (!self) {
@@ -65,11 +81,11 @@ NSString *const tnOverridePackageName = @"overridePackageName";
     }
 
     _platform = @"ios";
-    MPDevice *device = [[MPDevice alloc] init];
-    _identifierForAdvertiser = device.advertiserId;
-    MPApplication *application = [[MPApplication alloc] init];
+    _identifierForAdvertiser = [self advertiserId];
+    NSDictionary *bundleInfoDictionary = [[NSBundle mainBundle] infoDictionary];
+    NSString *bundleIdentifier = bundleInfoDictionary[@"CFBundleIdentifier"];
     NSString *overridePackageName = configuration[tnOverridePackageName];
-    _packageName = overridePackageName && ![overridePackageName isEqualToString:@""] ? overridePackageName : [application bundleIdentifier];
+    _packageName = overridePackageName && ![overridePackageName isEqualToString:@""] ? overridePackageName : bundleIdentifier;
     _sdkVersion = [UIDevice currentDevice].systemVersion;
     _adTrackingEnabled = _identifierForAdvertiser ? [@YES stringValue] : [@NO stringValue];
 
