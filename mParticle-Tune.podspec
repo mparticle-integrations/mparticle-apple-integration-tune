@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name             = "mParticle-Tune"
-    s.version          = "6.10.0"
+    s.version          = "6.10.2"
     s.summary          = "Tune integration for mParticle"
 
     s.description      = <<-DESC
@@ -15,5 +15,5 @@ Pod::Spec.new do |s|
 
     s.ios.deployment_target = "8.0"
     s.ios.source_files      = 'mParticle-Tune/*.{h,m,mm}'
-    s.ios.dependency 'mParticle-Apple-SDK/mParticle', '~> 6.10.0'
+    s.ios.dependency 'mParticle-Apple-SDK/mParticle', '~> 6.10.2'
 end

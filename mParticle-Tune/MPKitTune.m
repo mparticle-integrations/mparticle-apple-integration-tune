@@ -56,13 +56,13 @@ NSString *const tnOverridePackageName = @"overridePackageName";
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
         SEL selector = NSSelectorFromString(@"sharedManager");
         id<NSObject> adIdentityManager = [MPIdentifierManager performSelector:selector];
-        
+
         selector = NSSelectorFromString(@"advertisingIdentifier");
         advertiserId = [[adIdentityManager performSelector:selector] UUIDString];
 #pragma clang diagnostic pop
 #pragma clang diagnostic pop
     }
-    
+
     return advertiserId;
 }
 
@@ -122,7 +122,7 @@ static NSString* const USER_DEFAULT_KEY_PREFIX = @"_TUNE_";
     [defaults synchronize];
 }
 
-- (nonnull MPKitExecStatus *)checkForDeferredDeepLinkWithCompletionHandler:(void(^)(NSDictionary<NSString *, NSString *> *linkInfo, NSError *error))completionHandler {
+- (nonnull MPKitExecStatus *)checkForDeferredDeepLinkWithCompletionHandler:(void(^)(NSDictionary *linkInfo, NSError *error))completionHandler {
     NSString * const TUNE_KEY_DEEPLINK_CHECKED = @"mat_deeplink_checked";
     MPKitExecStatus *status;
 
