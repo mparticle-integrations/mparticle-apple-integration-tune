@@ -42,7 +42,7 @@ NSString *const tnOverridePackageName = @"overridePackageName";
 }
 
 + (void)load {
-    MPKitRegister *kitRegister = [[MPKitRegister alloc] initWithName:@"Tune" className:@"MPKitTune" startImmediately:YES];
+    MPKitRegister *kitRegister = [[MPKitRegister alloc] initWithName:@"Tune" className:@"MPKitTune"];
     [MParticle registerExtension:kitRegister];
 }
 
@@ -66,18 +66,16 @@ NSString *const tnOverridePackageName = @"overridePackageName";
     return advertiserId;
 }
 
-- (instancetype)initWithConfiguration:(NSDictionary *)configuration startImmediately:(BOOL)startImmediately {
-    self = [super init];
-    if (!self) {
-        return nil;
-    }
+- (MPKitExecStatus *)didFinishLaunchingWithConfiguration:(NSDictionary *)configuration {
+    MPKitExecStatus *execStatus = nil;
 
     _configuration = configuration;
     _advertiserId = configuration[tnAdvertiserId];
     _conversionKey = configuration[tnConversionKey];
     BOOL validConfiguration = _advertiserId != nil && _conversionKey != nil;
     if (!validConfiguration) {
-        return nil;
+        execStatus = [[MPKitExecStatus alloc] initWithSDKCode:[[self class] kitCode] returnCode:MPKitReturnCodeRequirementsNotMet];
+        return execStatus;
     }
 
     _platform = @"ios";
@@ -99,7 +97,8 @@ NSString *const tnOverridePackageName = @"overridePackageName";
                                                           userInfo:userInfo];
     });
 
-    return self;
+    execStatus = [[MPKitExecStatus alloc] initWithSDKCode:[[self class] kitCode] returnCode:MPKitReturnCodeSuccess];
+    return execStatus;
 }
 
 static NSString* const USER_DEFAULT_KEY_PREFIX = @"_TUNE_";
