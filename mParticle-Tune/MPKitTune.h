@@ -23,6 +23,9 @@
 #import "mParticle.h"
 #endif
 
+extern NSString * _Nonnull const MPKitTuneErrorDomain;
+extern NSString * _Nonnull const MPKitTuneErrorMessageKey;
+
 @interface MPKitTune : NSObject <MPKitProtocol>
 
 @property (nonatomic, strong, nonnull) NSDictionary *configuration;
