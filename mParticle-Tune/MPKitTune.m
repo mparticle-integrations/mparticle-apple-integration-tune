@@ -94,7 +94,7 @@ NSString * const MPKitTuneErrorMessageKey = @"mParticle-Tune Error";
 
     _started = YES;
     
-    [self checkForDeeplink];
+    [self checkForAttribution];
 
     dispatch_async(dispatch_get_main_queue(), ^{
         NSDictionary *userInfo = @{mParticleKitInstanceKey:[[self class] kitCode]};
@@ -133,14 +133,14 @@ static NSString* const USER_DEFAULT_KEY_PREFIX = @"_TUNE_";
     return error;
 }
 
-- (void)checkForDeeplink {
+- (void)checkForAttribution {
     NSString * const TUNE_KEY_DEEPLINK_CHECKED = @"mat_deeplink_checked";
 
     if (!_advertiserId
         || !_identifierForAdvertiser
         || [[self class] userDefaultValueForKey:TUNE_KEY_DEEPLINK_CHECKED]) {
         NSError *error = [self errorWithMessage:@"Requirements not met"];
-        [_kitApi onDeeplinkCompleteWithInfo:nil error:error];
+        [_kitApi onAttributionCompleteWithResult:nil error:error];
         return;
     }
 
@@ -211,19 +211,23 @@ static NSString* const USER_DEFAULT_KEY_PREFIX = @"_TUNE_";
                 if (deepLink) {
                     NSDictionary *info = @{@"deepLink": deepLink};
                     success = YES;
-                    [_kitApi onDeeplinkCompleteWithInfo:info error:nil];
+
+                    MPAttributionResult *attributionResult = [[MPAttributionResult alloc] init];
+                    attributionResult.linkInfo = info;
+
+                    [_kitApi onAttributionCompleteWithResult:attributionResult error:nil];
                 } else {
-                    NSError *deeplinkError = [self errorWithMessage:[NSString stringWithFormat:@"Unable to create NSURL with string: %@", link]];
-                    [_kitApi onDeeplinkCompleteWithInfo:nil error:deeplinkError];
+                    NSError *attributionError = [self errorWithMessage:[NSString stringWithFormat:@"Unable to create NSURL with string: %@", link]];
+                    [_kitApi onAttributionCompleteWithResult:nil error:attributionError];
                 }
             } else {
-                NSError *deeplinkError = [self errorWithMessage:[NSString stringWithFormat:@"Received non-200 response code: %d", (int)[(NSHTTPURLResponse *)response statusCode]]];
-                [_kitApi onDeeplinkCompleteWithInfo:nil error:deeplinkError];
+                NSError *attributionError = [self errorWithMessage:[NSString stringWithFormat:@"Received non-200 response code: %d", (int)[(NSHTTPURLResponse *)response statusCode]]];
+                [_kitApi onAttributionCompleteWithResult:nil error:attributionError];
             }
         }
         else {
-            NSError *deeplinkError = [self errorWithMessage:[NSString stringWithFormat:@"HTTP request failed with error: %@", error]];
-            [_kitApi onDeeplinkCompleteWithInfo:nil error:deeplinkError];
+            NSError *attributionError = [self errorWithMessage:[NSString stringWithFormat:@"HTTP request failed with error: %@", error]];
+            [_kitApi onAttributionCompleteWithResult:nil error:attributionError];
         }
     }] resume];
 }
@@ -231,7 +235,7 @@ static NSString* const USER_DEFAULT_KEY_PREFIX = @"_TUNE_";
 - (MPKitExecStatus *)continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler {
     MPKitExecStatus *execStatus = nil;
     
-    [self checkForDeeplink];
+    [self checkForAttribution];
     
     execStatus = [[MPKitExecStatus alloc] initWithSDKCode:[[self class] kitCode] returnCode:MPKitReturnCodeSuccess];
     return execStatus;
@@ -240,7 +244,7 @@ static NSString* const USER_DEFAULT_KEY_PREFIX = @"_TUNE_";
 - (MPKitExecStatus *)openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options {
     MPKitExecStatus *execStatus = nil;
     
-    [self checkForDeeplink];
+    [self checkForAttribution];
     
     execStatus = [[MPKitExecStatus alloc] initWithSDKCode:[[self class] kitCode] returnCode:MPKitReturnCodeSuccess];
     return execStatus;
@@ -249,7 +253,7 @@ static NSString* const USER_DEFAULT_KEY_PREFIX = @"_TUNE_";
 - (MPKitExecStatus *)openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
     MPKitExecStatus *execStatus = nil;
     
-    [self checkForDeeplink];
+    [self checkForAttribution];
     
     execStatus = [[MPKitExecStatus alloc] initWithSDKCode:[[self class] kitCode] returnCode:MPKitReturnCodeSuccess];
     return execStatus;
