@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name             = "mParticle-Tune"
-    s.version          = "7.1.4"
+    s.version          = "7.1.5"
     s.summary          = "Tune integration for mParticle"
 
     s.description      = <<-DESC
