@@ -215,19 +215,19 @@ static NSString* const USER_DEFAULT_KEY_PREFIX = @"_TUNE_";
                     MPAttributionResult *attributionResult = [[MPAttributionResult alloc] init];
                     attributionResult.linkInfo = info;
 
-                    [_kitApi onAttributionCompleteWithResult:attributionResult error:nil];
+                    [self->_kitApi onAttributionCompleteWithResult:attributionResult error:nil];
                 } else {
                     NSError *attributionError = [self errorWithMessage:[NSString stringWithFormat:@"Unable to create NSURL with string: %@", link]];
-                    [_kitApi onAttributionCompleteWithResult:nil error:attributionError];
+                    [self->_kitApi onAttributionCompleteWithResult:nil error:attributionError];
                 }
             } else {
                 NSError *attributionError = [self errorWithMessage:[NSString stringWithFormat:@"Received non-200 response code: %d", (int)[(NSHTTPURLResponse *)response statusCode]]];
-                [_kitApi onAttributionCompleteWithResult:nil error:attributionError];
+                [self->_kitApi onAttributionCompleteWithResult:nil error:attributionError];
             }
         }
         else {
             NSError *attributionError = [self errorWithMessage:[NSString stringWithFormat:@"HTTP request failed with error: %@", error]];
-            [_kitApi onAttributionCompleteWithResult:nil error:attributionError];
+            [self->_kitApi onAttributionCompleteWithResult:nil error:attributionError];
         }
     }] resume];
 }
