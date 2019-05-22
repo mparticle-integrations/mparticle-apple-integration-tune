@@ -43,19 +43,19 @@ NSString * const MPKitTuneErrorMessageKey = @"mParticle-Tune Error";
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
         SEL selector = NSSelectorFromString(@"sharedManager");
         id<NSObject> adIdentityManager = [MPIdentifierManager performSelector:selector];
-
+        
         selector = NSSelectorFromString(@"advertisingIdentifier");
         advertiserId = [[adIdentityManager performSelector:selector] UUIDString];
 #pragma clang diagnostic pop
 #pragma clang diagnostic pop
     }
-
+    
     return advertiserId;
 }
 
 - (MPKitExecStatus *)didFinishLaunchingWithConfiguration:(NSDictionary *)configuration {
     MPKitExecStatus *execStatus = nil;
-
+    
     _configuration = configuration;
     _advertiserId = configuration[tnAdvertiserId];
     _conversionKey = configuration[tnConversionKey];
@@ -64,7 +64,7 @@ NSString * const MPKitTuneErrorMessageKey = @"mParticle-Tune Error";
         execStatus = [[MPKitExecStatus alloc] initWithSDKCode:[[self class] kitCode] returnCode:MPKitReturnCodeRequirementsNotMet];
         return execStatus;
     }
-
+    
     _platform = @"ios";
     _identifierForAdvertiser = [self advertiserId];
     NSDictionary *bundleInfoDictionary = [[NSBundle mainBundle] infoDictionary];
@@ -73,19 +73,19 @@ NSString * const MPKitTuneErrorMessageKey = @"mParticle-Tune Error";
     _packageName = overridePackageName && ![overridePackageName isEqualToString:@""] ? overridePackageName : bundleIdentifier;
     _sdkVersion = [UIDevice currentDevice].systemVersion;
     _adTrackingEnabled = _identifierForAdvertiser ? [@YES stringValue] : [@NO stringValue];
-
+    
     _started = YES;
     
     [self checkForAttribution];
-
+    
     dispatch_async(dispatch_get_main_queue(), ^{
         NSDictionary *userInfo = @{mParticleKitInstanceKey:[[self class] kitCode]};
-
+        
         [[NSNotificationCenter defaultCenter] postNotificationName:mParticleKitDidBecomeActiveNotification
                                                             object:nil
                                                           userInfo:userInfo];
     });
-
+    
     execStatus = [[MPKitExecStatus alloc] initWithSDKCode:[[self class] kitCode] returnCode:MPKitReturnCodeSuccess];
     return execStatus;
 }
@@ -95,9 +95,9 @@ static NSString* const USER_DEFAULT_KEY_PREFIX = @"_TUNE_";
 + (id)userDefaultValueForKey:(NSString *)key {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSString *newKey = [NSString stringWithFormat:@"%@%@", USER_DEFAULT_KEY_PREFIX, key];
-
+    
     id value = [defaults valueForKey:newKey];
-
+    
     // return value for new key if exists, else return value for old key
     if( value ) return value;
     return [defaults valueForKey:key];
@@ -117,7 +117,7 @@ static NSString* const USER_DEFAULT_KEY_PREFIX = @"_TUNE_";
 
 - (void)checkForAttribution {
     NSString * const TUNE_KEY_DEEPLINK_CHECKED = @"mat_deeplink_checked";
-
+    
     if (!_advertiserId
         || !_identifierForAdvertiser
         || [[self class] userDefaultValueForKey:TUNE_KEY_DEEPLINK_CHECKED]) {
@@ -125,10 +125,10 @@ static NSString* const USER_DEFAULT_KEY_PREFIX = @"_TUNE_";
         [_kitApi onAttributionCompleteWithResult:nil error:error];
         return;
     }
-
+    
     // persist state so deeplink isn't requested twice
     [[self class] setUserDefaultValue:@YES forKey:TUNE_KEY_DEEPLINK_CHECKED];
-
+    
     __weak MPKitTune *weakSelf = self;
     dispatch_block_t getUserAgent = ^{
         UIWebView *webView = [[UIWebView alloc] initWithFrame:CGRectZero];
@@ -136,13 +136,13 @@ static NSString* const USER_DEFAULT_KEY_PREFIX = @"_TUNE_";
         if (!strongSelf) return;
         strongSelf->_userAgent = [NSString stringWithFormat:@"%@", [webView stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"]];
     };
-
+    
     if ([NSThread isMainThread]) {
         getUserAgent();
     } else {
         dispatch_sync(dispatch_get_main_queue(), getUserAgent);
     }
-
+    
     NSString * const TUNE_KEY_PLATFORM = @"platform";
     NSString * const TUNE_KEY_ADVERTISER_ID = @"advertiser_id";
     NSString * const TUNE_KEY_CONVERSION_USER_AGENT = @"conversion_user_agent";
@@ -153,7 +153,7 @@ static NSString* const USER_DEFAULT_KEY_PREFIX = @"_TUNE_";
     NSString * const TUNE_KEY_VER = @"ver";
     NSString * const TUNE_SERVER_DOMAIN_DEEPLINK = @"deeplink.mobileapptracking.com";
     NSString * const TUNE_SERVER_PATH_DEEPLINK = @"v1/link.txt";
-
+    
     NSMutableString *urlString = [NSMutableString stringWithFormat:@"%@://%@.%@/%@",
                                   TUNE_KEY_HTTPS,
                                   _advertiserId,
@@ -175,13 +175,13 @@ static NSString* const USER_DEFAULT_KEY_PREFIX = @"_TUNE_";
     [queryItems addObject:identifierForAdvertiser];
     [queryItems addObject:adTrackingEnabled];
     [queryItems addObject:userAgent];
-
+    
     components.queryItems = queryItems;
     NSURL *url = components.URL;
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     [request setCachePolicy:NSURLRequestReloadIgnoringLocalCacheData];
     [request addValue:_conversionKey forHTTPHeaderField:@"X-MAT-Key"];
-
+    
     NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
     NSURLSession *session = [NSURLSession sessionWithConfiguration:config];
     [[session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
@@ -193,10 +193,10 @@ static NSString* const USER_DEFAULT_KEY_PREFIX = @"_TUNE_";
                 if (deepLink) {
                     NSDictionary *info = @{@"deepLink": deepLink};
                     success = YES;
-
+                    
                     MPAttributionResult *attributionResult = [[MPAttributionResult alloc] init];
                     attributionResult.linkInfo = info;
-
+                    
                     [self->_kitApi onAttributionCompleteWithResult:attributionResult error:nil];
                 } else {
                     NSError *attributionError = [self errorWithMessage:[NSString stringWithFormat:@"Unable to create NSURL with string: %@", link]];
