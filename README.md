@@ -1,5 +1,13 @@
 ## Tune Kit Integration
 
+### The Tune Kit is no longer supported
+
+The Tune kit for the mParticle iOS SDK has been deprecated and is no longer supported.
+
+-----
+
+**Deprecated**
+
 This repository contains the [Tune](https://www.tune.com) integration for the [mParticle Apple SDK](https://github.com/mParticle/mparticle-apple-sdk).
 
 ### Adding the integration
