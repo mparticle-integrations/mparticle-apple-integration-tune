@@ -7,13 +7,13 @@ This repository contains the [Tune](https://www.tune.com) integration for the [m
 1. Add the kit dependency to your app's Podfile or Cartfile:
 
     ```
-    pod 'mParticle-Tune', '~> 7.0'
+    pod 'mParticle-Tune', '~> 8'
     ```
 
     OR
 
     ```
-    github "mparticle-integrations/mparticle-apple-integration-tune" ~> 7.0
+    github "mparticle-integrations/mparticle-apple-integration-tune" ~> 8.0
     ```
 
 2. Follow the mParticle iOS SDK [quick-start](https://github.com/mParticle/mparticle-apple-sdk), then rebuild and launch your app, and verify that you see `"Included kits: { Tune }"` in your Xcode console 
